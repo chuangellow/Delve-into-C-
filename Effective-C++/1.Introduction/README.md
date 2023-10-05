@@ -1,5 +1,11 @@
 # 1. Introduction
 
+## Table of Contents
+- [Initialization](#initialization)
+- [Copy Constructor](#copy-constructor)
+- [Undefined Behavior](#undefined-behavior)
+- [Client](#client)
+
 ## Initialization
 
 Constructors declared explicit are usally preferable to non-explicit ones.
