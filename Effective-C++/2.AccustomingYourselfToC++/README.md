@@ -3,6 +3,7 @@
 ## Table of contents
 
 1. [View C++ as a federation of language](#View-C++-as-a-federation-of-language)
+2. [Prefer complier to the pre-processor](#prefer-complier-to-the-preprocessor)
 
 ## View C++ as a federation of language
 
@@ -54,4 +55,14 @@ pass-by-value is usually efficient than pass-by-reference, but when we are using
 
 However, when we come accross into the STL. Iterators and function objects are modeled on the pointers in C, so the old C pass-by-value rule applies again.
 
-## 
+## Prefer complier to the pre-processor
+
+When we do something like this:
+
+```
+#define PI 3.14159
+```
+
+The ```PI``` may never be seen by the compiler. It's removed by the preprocessor before the source code ever gets to the complier.
+
+Therefore, the name ```PI``` may not get entered into the symbol table.
