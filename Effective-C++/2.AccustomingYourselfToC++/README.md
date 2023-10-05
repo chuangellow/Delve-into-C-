@@ -4,7 +4,7 @@
 
 1. [View C++ as a federation of language](#View-C++-as-a-federation-of-language)
 
-##View C++ as a federation of language
+## View C++ as a federation of language
 
 In the past day, C++ is just an OOP extension of the C language.
 
