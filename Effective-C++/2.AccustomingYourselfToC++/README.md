@@ -57,6 +57,11 @@ However, when we come accross into the STL. Iterators and function objects are m
 
 ## Prefer complier to the pre-processor
 
+### Advantages of avoiding ```#define```
+
+1. Constant can be entered the symbol table
+2. Smaller code 
+
 When we do something like this:
 
 ```
@@ -65,4 +70,33 @@ When we do something like this:
 
 The ```PI``` may never be seen by the compiler. It's removed by the preprocessor before the source code ever gets to the complier.
 
-Therefore, the name ```PI``` may not get entered into the symbol table.
+Therefore, the name ```PI``` may not get entered into the symbol table. It can be confusing when we encounter an error message refer to ```3.14159``` instead of ```PI```.
+
+This may make us have no idea where the ```3.14159``` comes from.
+
+One solution is to replace the macro with a constant:
+
+```
+const double Pi = 3.14159;
+```
+
+Since we define the variable as a constant, ```Pi``` can be seen by compilers and be entered into the symbol table.
+
+The second advantage of using ```const``` instead of ```#define``` is that it yields a smaller code.
+
+### Two special cases when replacing ```#define``` with constants
+
+1. constant pointers
+2. class-specific constants
+
+To define a constant char*-based string in a header file, we have to write const twice like:
+
+```
+const char* const authorName = "Chih-Hao Huang"
+```
+
+Here, string object is preferable to the char*-based progenitors.
+
+```
+const std::string authorName("Chih-Hao Huang"
+```
