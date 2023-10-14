@@ -58,45 +58,7 @@ $$
 
 而其他種的則可以用Recursion Tree，先判斷他的level cost是否一致，若一樣，則為：$\theta(f(n)*logn)$，反之若為等比關係，則為：$\theta(f(n))$
 
-## 3. Underneath the Recursive Call
-
-由計算機組織課程可以知道，當遇到Procedure call時，會利用 jr instruction
-
-而jr instruction會保存當前的statement的記憶體位址到\$ra 暫存器
-
-但是如果一個程式procedure call的程序並非為Leaf procedures時
-
-也就是這個被呼叫的呼叫的程序也會呼叫其他的程序
-
-如果不做預先保存當前狀況到memory stack的這個動作，會造成跳躍過後無法返回原先返回位置或是暫存器內容被覆蓋無法重新取回的問題
-
-舉例來說：如果有一個程序的流程如下：
-
-$$
-main\ function\to procedure\ A\to procedure\ B
-$$
-
-而其暫存器的變動如下：
-
-$$main\ function\to procedure\ A：\$a0=3 \ \& \ \$ra=L1$$
-
-$$procedure\ A\to procedure\ B：\$a0=4 \ \& \ \$ra=L2$$
-
-則在跳到procedure B後，$\$a0\ \& \ \$ra$的值就被覆蓋了，但是procedure A還沒完成他的運算，且永遠跳不回main procedure
-
-故要解決這樣的問題，必須先將暫存器的內容保存到memory的stack中
-
-方法為：
-
-caller(呼叫程序)會透過push argument register （\$ax）和temporary register （\$tx）來保存
-
-而callee(被呼叫程序)會透過push address register （\$ra）和saved register （\$sx）來保存
-
-在程序結束後，返回caller時才會pop stack取回這些暫存器內容
-
-而recursive call就是上面這種程序的一種，因此一樣就有一些當前執行狀況的值需要被預先保存到memory的stack中，以避免被override，呼叫的procedure執行完畢後，再重新pop取回這些執行狀況的值
-
-## 4. Some Examples
+## 3. Some Examples
 
 如同上述所說，遞迴的使用條件通常為
 
@@ -136,6 +98,6 @@ long long int fibonacci(long long int n) {
 }
 ```
 
-## Intuition of Designing a Recurence Relation
+## 4. Intuition of Designing a Recurence Relation
 
 遞迴關係式一定會有一個邊界條件，通常的寫法是先寫邊界條件， 
