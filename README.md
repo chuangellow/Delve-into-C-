@@ -16,4 +16,4 @@ Some Notes and Codes for delving into the C++ language.
 
 | # | Title | Experiment | Note | Date | Done |
 |---|  -------- | ----- | -------- | ---------- | --- |
-|1| Recursion | [Code](./AP325/Recursion)| [README](./AP325/Recursion/README.md) | 2023/10/14 | [x] |
+|1| Recursion | [Code](./AP325/1.Recursion)| [README](./AP325/1.Recursion/README.md) | 2023/10/14 | [x] |
