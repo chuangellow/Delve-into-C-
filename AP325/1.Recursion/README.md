@@ -98,6 +98,72 @@ long long int fibonacci(long long int n) {
 }
 ```
 
+#### Combination
+
+數學定義為：
+
+$$
+\binom nm=\begin{cases}1 \ \ if \ n=m\ or \ m=0 \\\binom {n-1}m+\binom {n-1}{m-1}\end{cases}
+$$
+
+```
+long long int combination(long long int n, long long int m) {
+	if (n == m || m == 0) return 1;
+	return combination(n-1, m) + combination(n-1, m-1);
+}
+```
+
+#### Composition Function
+
+問題定義為：
+
+>Q-1-2. 合成函數(2) (APCS201902)
+>
+> 令 f(x)=2x–3;g(x,y)=2x+y–7;h(x,y,z)=3x–2y+z。本題要計算一個合成函數的值，例如 h(f(5),g(3,4),3)=h(7,3,3)=18。 
+> 
+> Time limit: 1秒
+> 
+> 輸入格式:輸入一行，長度不超過1000，它是一個f, g, 與h的合成函數，但所有的括弧與逗號都換成空白。輸入的整數絕對值皆不超過 1000。
+> 
+> 輸出: 輸出函數值。最後答案與運算過程不會超過正負 10 億的區間。 
+> 
+> 範例輸入:
+h f 5 g 3 4 3
+
+> 範例輸出:
+18
+
+關鍵在於如何定義遞迴式，遞迴的時間為何，還有邊界條件是什麼，
+這裡一次會讀入一個值，可能有 ```h, f, g``` 或是 number 幾種結果。
+
+如果是 ```h, f, g```，需要繼續 parse，直到得到一個 number，才回傳該 number，並依照 ```h, f, g``` 的定義來計算。
+
+```
+int eval() {
+	int val, x, y, z;
+	char token[10];
+	if (scanf("%d", &val) == 1) {
+		return val;
+	}
+	scanf("%s", token);
+	if (token[0] == 'f') {
+		x = eval();
+		return 2 * x - 3;
+	}
+	else if (token[0] == 'g') {
+		x = eval();
+		y = eval();
+		return 2 * x + y - 7;
+	}
+	else if (token[0] == 'h') {
+		x = eval();
+		y = eval();
+		z = eval();
+		return 3 * x - 2 * y + z;
+	}
+}
+```
+
 ## 4. Intuition of Designing a Recurence Relation
 
 遞迴關係式一定會有一個邊界條件，通常的寫法是先寫邊界條件， 
