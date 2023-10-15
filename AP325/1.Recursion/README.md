@@ -164,6 +164,46 @@ int eval() {
 }
 ```
 
-## 4. Intuition of Designing a Recurence Relation
+#### 棍子中點切割
 
-遞迴關係式一定會有一個邊界條件，通常的寫法是先寫邊界條件， 
+>P-1-3. 棍子中點切割
+>
+> 有一台切割棍子的機器，每次將一段棍子會送入此台機器時，機器會偵測棍子上標示 的可切割點，然後計算出最接近中點的切割點，並於此切割點將棍子切割成兩段，切 割後的每一段棍子都會被繼續送入機器進行切割，直到每一段棍子都沒有切割點為止。請注意，如果最接近中點的切割點有二，則會選擇座標較小的切割點。每一段棍 子的切割成本是該段棍子的長度，輸入一根長度 L 的棍子上面 N 個切割點位置的座 標，請計算出切割總成本。
+> 
+> Time limit: 1秒
+> 
+> 輸入格式:第一行有兩個正整數 N 與 L。第二行有 N 個正整數，依序代表由小到大的 切割點座標 p[1]~p[N]，數字間以空白隔開，座標的標示的方式是以棍子左端為 0， 而右端為L。N < 5e4，L < 1e9。
+> 
+> 輸出: 切割總成本點
+> 
+> 範例輸入:
+4 10
+1 2 4 6
+
+> 範例輸出:
+22
+
+可以容易從子問題想見該題目的遞迴方法為，每次切割後就是在解剩餘一段棍子左端和右端的棍子的子問題，
+
+而邊界條件為棍子長度小於1時，因此步驟為：
+
+```
+1. Find the mid point
+2. Search for the cutting point
+3. Calculate the cost
+```
+
+關鍵在於找 cutting point 時，可以使用 binary search 降低複雜度至 $O(\log(n))$
+
+這邊可以使用 jumping binary search
+
+```
+int pos = left;
+for (int jump = (right - left) / 2; jump >= 0; jump /=2) {
+	while (pos + jump < right && p[pos + jump] < target) {
+		pos += jump;
+	}
+}
+```
+
+## 4. Intuition of Designing a Recurence Relation
