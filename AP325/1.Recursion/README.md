@@ -183,6 +183,7 @@ int eval() {
 > 範例輸出:
 22
 
+
 可以容易從子問題想見該題目的遞迴方法為，每次切割後就是在解剩餘一段棍子左端和右端的棍子的子問題，
 
 而邊界條件為棍子長度小於1時，因此步驟為：
@@ -202,6 +203,100 @@ int pos = left;
 for (int jump = (right - left) / 2; jump >= 0; jump /=2) {
 	while (pos + jump < right && p[pos + jump] < target) {
 		pos += jump;
+	}
+}
+```
+
+#### 二維黑白影像編碼
+
+>Q-1-5 二維黑白影像編碼
+>
+> 假設 n 是 2 的冪次，也就是存在某個非負整數 k 使得 n = $2^k$ 。將一個 n*n 的黑白 影像以下列遞迴方式編碼:
+如果每一格像素都是白色，我們用 0 來表示;
+如果每一格像素都是黑色，我們用 1 來表示; 否則，並非每一格像素都同色，先將影像均等劃分為四個邊長為 n/2 的小正方形 後，然後表示如下:先寫下 2，之後依續接上左上、右上、左下、右下四塊的編碼。
+輸入編碼字串 S 以及影像尺寸 n，請計算原始影像中有多少個像素是 1。
+> 
+> Time limit: 1秒
+> 
+> 輸入格式:第一行是影像   S，字串長度小於 1,100,000。第二行為正整數 n，$1\le n \le 1024$，中 n 必為2的冪次。
+> 
+> 輸出: 輸出共有多少個像素為 1
+> 
+> 範例輸入:
+> 
+2020020100010
+>
+>8
+>
+> 範例輸出:
+17
+
+可以從一個例子輕鬆想出遞迴的方式在於解切割為 $n/2$ 大小的左上至右下的子問題，
+
+而原問題像素為 1 的結果會為左上至右下子問題的解的和。
+
+舉例來說：
+
+```
+2020020100010
+```
+
+第一個遇到 $2$，就代表下面要解四個子問題分別為：
+
+1. $0$
+2. $200201000$
+3. $1$
+4. $0$
+
+遞迴終止條件在遇到 0 和 1 時，遇到 0， count 為 0，
+而遇到 1 時， count 為 $n^2$
+
+但該題關鍵反而在實作時，要如何得到下一個要處理的 character 的位置，
+
+因為下一個處理的 character 位置必須在遞迴呼叫解完前一個子問題才會得知，
+
+舉例來說，解完在
+
+```
+2020020100010
+```
+
+左下的 subblock 的 pos 必須解完右上的 subblock 才會知道。
+
+因此，遞迴返回的東西必須包含 pos 和 count。
+
+這邊就以一個 struct 來包裝遞迴返回的兩個值：
+
+```
+typedef struct Result {
+	long long int count;
+	int pos;
+} Result;
+```
+
+```
+Result eval(int pos, char encoded_string[], int n) {
+	if (pos >= strlen(encoded_string) || n == 0) return {0, pos};
+	Result lu, ru, lb, rb;
+	lu.count = ru.count = lb.count = rb.count = 0;
+	lu.pos = ru.pos = lb.pos = rb.pos = pos;
+	switch (encoded_string[pos]) {
+		case '0':
+			return {0, pos+1};
+			break;
+		case '1':
+			return {n*n, pos+1};
+			break;
+		case '2':
+			lu = eval(pos+1, encoded_string, n/2);
+			ru = eval(lu.pos, encoded_string, n/2);
+			lb = eval(ru.pos, encoded_string, n/2);
+			rb = eval(lb.pos, encoded_string, n/2);
+			return {lu.count+ru.count+lb.count+rb.count, rb.pos};
+			break;
+		default:
+			return {0, pos+1};
+			break;
 	}
 }
 ```
