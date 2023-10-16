@@ -58,18 +58,16 @@ $$
 
 而其他種的則可以用Recursion Tree，先判斷他的level cost是否一致，若一樣，則為：$\theta(f(n)*logn)$，反之若為等比關係，則為：$\theta(f(n))$
 
-## 3. Some Examples
+## 3. Recursion By definition
 
 如同上述所說，遞迴的使用條件通常為
 
 1. 根據定義來實作
 2. 以遞迴來進行窮舉暴搜
 
-### By Definition
-
 根據定義的遞迴實作上通常很容易，困難之處在於構思出遞迴關係。
 
-#### factorial
+### factorial
 
 數學定義為：
 $$
@@ -83,7 +81,7 @@ long long int factorial(long long int n) {
 }
 ```
 
-#### Fibonacci
+### Fibonacci
 
 數學定義為：
 
@@ -98,7 +96,7 @@ long long int fibonacci(long long int n) {
 }
 ```
 
-#### Combination
+### Combination
 
 數學定義為：
 
@@ -113,7 +111,7 @@ long long int combination(long long int n, long long int m) {
 }
 ```
 
-#### Composition Function
+### Composition Function
 
 問題定義為：
 
@@ -164,11 +162,11 @@ int eval() {
 }
 ```
 
-#### 棍子中點切割
+### 棍子中點切割
 
 >P-1-3. 棍子中點切割
 >
-> 有一台切割棍子的機器，每次將一段棍子會送入此台機器時，機器會偵測棍子上標示 的可切割點，然後計算出最接近中點的切割點，並於此切割點將棍子切割成兩段，切 割後的每一段棍子都會被繼續送入機器進行切割，直到每一段棍子都沒有切割點為止。請注意，如果最接近中點的切割點有二，則會選擇座標較小的切割點。每一段棍 子的切割成本是該段棍子的長度，輸入一根長度 L 的棍子上面 N 個切割點位置的座 標，請計算出切割總成本。
+> 有一台切割棍子的機器，每次將一段棍子會送入此台機器時，機器會偵測棍子上標示的可切割點，然後計算出最接近中點的切割點，並於此切割點將棍子切割成兩段，切割後的每一段棍子都會被繼續送入機器進行切割，直到每一段棍子都沒有切割點為止。請注意，如果最接近中點的切割點有二，則會選擇座標較小的切割點。每一段棍 子的切割成本是該段棍子的長度，輸入一根長度 L 的棍子上面 N 個切割點位置的座 標，請計算出切割總成本。
 > 
 > Time limit: 1秒
 > 
@@ -207,7 +205,11 @@ for (int jump = (right - left) / 2; jump >= 0; jump /=2) {
 }
 ```
 
-#### 二維黑白影像編碼
+或者使用 STL 裡已有的 ```lower_bound(s, t, x)```，即可在 $[s, t)$ 範圍中找到第一個大於等於 x 的值。
+
+詳見 [cpp reference](https://en.cppreference.com/w/cpp/algorithm/lower_bound) 的介紹，注意的是如果給定的切割點座標不為排序過的，就無法使用。
+
+### 二維黑白影像編碼
 
 >Q-1-5 二維黑白影像編碼
 >
@@ -301,4 +303,116 @@ Result eval(int pos, char encoded_string[], int n) {
 }
 ```
 
-## 4. Intuition of Designing a Recurence Relation
+## 4. Recursion to Enumeration
+
+Enumeration 和 Brute-force 都是透過窮舉出所有可能的解來搜尋答案的演算法策略。
+
+Brute-force 通常是窮舉某種可能的組合結構，如：所有排列、所有子集合等等。
+
+而遞迴的窮舉則是以樹狀圖方式來展開所有可能的組合，因此又稱作 Tree searching algorithm。
+
+下面為一例子：
+
+### Subarray Sum
+
+> P-1-6. 最接近的區間和
+> 
+假設陣列 A[1..n]中存放著某些整數，另外給了一個整數 K，請計算哪一個連續區段的和最接近 K 而不超過 K。
+
+要找一連續區段，可以透過左右注標來定義：$[i, j]$，因此，問題變成了窮舉下面的組合：$1\le i \le j \le n$
+
+窮舉所有的組合為：$O(n^2)$，並迴圈內必須計算連續區間和，最簡單的方法為用一個迴圈計算，時間複雜度為：$O(n^3)$，方法為：
+
+```
+int best = K;
+for (int i = 1; i <= n; i++) {
+	for (int j = i; j <= n; j++) {
+		int sum = 0;
+		for (int k = i; k <= j; k++) {
+			sum += A[k];
+		}
+		if (sum <= K && K - sum < best) {
+			best = K - sum;
+		}
+	}
+}
+```
+但計算連續區間和是可以再優化的，因為每次固定左端 A[i] 遍歷所有 j 時， sum 只多了 A[j] 而已。
+
+```
+int best = K;
+for (int i = 1; i <= n; i++) {
+	int sum = 0;
+	for (int j = i; j <= n; j++) {
+		sum += A[j];
+		if (sum <= K && K - sum < best) {
+			best = K - sum;
+		}
+	}
+}
+```
+這樣一來就變為 $O(n^2)$ 了。
+
+另一種方式是利用常見的技巧為 accumulative sum，做前處理在 $O(n)$ 預先算好，
+
+舉例來說：
+```A = [2,3,1,2,4,3]```
+
+accumulative sum 為:
+
+```accumulative_sum = [0,2,5,6,8,12,15]```
+
+我們可以透過一個簡單的減法來得到連續區間和
+
+```
+sum(A[1:3]) = accumulative_sum[4] - accumulative_sum[1] 
+```
+
+事實上，該題可以利用 two-pointer 的技巧來避免窮舉所有可能的解，
+
+透過 two-pointer，可以維護一個滿足 constraint 的最佳的連續區間。
+
+進而在 $O(n)$ 時間內找到最佳解。
+
+```
+vector<int> solve(vector<int> nums, int k) {
+	vector<int> best_idx(2, 0);
+	int best = k;
+	int left = 0, right = 0, sum = 0;
+	int size = nums.size();
+	while (right < size) {
+		sum += nums.at(right);
+		while (sum > k) {
+			sum -= nums.at(left);
+			left++;
+		}
+		if (sum <= k && k - sum < best) {
+			best = k - sum;
+			best_idx.at(0) = left;
+			best_idx.at(1) = right;
+		}
+		right++;
+	}
+	return best_idx;
+}
+```
+
+### Enumerate Through All of the Subset
+
+> P-1-7. 子集合乘積
+
+> 輸入 n 個正整數，請計算其中有多少組合的相乘積除以 P 的餘數為 1，每個數字可以選取或不選取但不可重複選，輸入的數字可能重複。P=10009，0<n<26。 
+> 
+> 輸入第一行是 n，第二行是 n 個以空白間隔的正整數。
+> 
+> 輸出有多少種組合。若輸入為{1, 1, 2}，則有三種組合，選第一個 1，選第 2 個 1，以及選兩個 1。
+> 
+> time limit = 1 sec。
+
+這題我們可以透過窮舉所有可能的 subset，計算相乘乘積後，再除上 P。
+
+## 5. Intuition of Designing a Recurence Relation
+
+1. 先構思該問題的子問題是什麼
+2.  如何由子問題的解兜出原問題的解
+3.  邊界條件為何？遞迴何時終止
