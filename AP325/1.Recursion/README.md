@@ -411,6 +411,49 @@ vector<int> solve(vector<int> nums, int k) {
 
 這題我們可以透過窮舉所有可能的 subset，計算相乘乘積後，再除上 P。
 
+關鍵在於如何表示集合，我們可以透過一個 n bit vector 來表達一個有 n 個元素的集合。
+
+舉例來說，假設一集合為 ```{1, 1, 2}``` 共有 3 個元素，可以用 000~111 表示所有子集合，其中 1 代表該 index 元素在子集合中，0 則否。
+
+透過窮舉 bit vector，可以窮舉所有可能的子集合，並計算該子集合元素的 multiplication。
+
+```
+int solve(vector<int> nums, int p) {
+	int comb = 0;
+	int size = nums.size();
+	for (int s = 1; s < (1 << size); s++) {
+		long long int prod = 1;
+		for (int i = 0; i < size; i++) {
+			if (s & (1 << i)) {
+				prod = (prod * nums[i]) % p;
+			}
+		}
+		comb += (prod == 1)? 1: 0;
+	}
+	return comb;
+}
+```
+
+而同時，我們也可以利用遞迴式來 enumerate 所有子集合。
+
+考慮子問題為在取到集合的第 i 個元素時，可以決定取或不取，
+
+不取的方法為不將第 i 個元素乘到當前累積的集合元素乘積。
+
+```
+void solve(int pos, int prod, int *ans, vector<int> nums, int p, int n) {
+	if (pos >= n) {
+		if (prod == 1) *ans += 1;
+		return;
+	}
+	solve(pos+1, (prod * nums.at(pos)) % p, ans, nums, p, n);
+	solve(pos+1, prod, ans, nums, p, n);
+	return;
+}
+```
+
+### Subset Sum
+
 ## 5. Intuition of Designing a Recurence Relation
 
 1. 先構思該問題的子問題是什麼
